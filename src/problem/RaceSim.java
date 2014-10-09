@@ -43,6 +43,18 @@ public class RaceSim {
 		this.random = new Random();
 	}
 
+	public RaceSim(List<RaceState> stateHistory,
+			List<ArrayList<Action>> actionHistory, Track track) {
+		this.stateHistory = stateHistory;
+		this.actionHistory = actionHistory;
+		this.track = track;
+		random = new Random();
+		totalDamageCost = 0;
+		for (RaceState r : stateHistory) {
+			totalDamageCost += r.getTotalDamageCost();
+		}
+	}
+
 	public void stepTurn(List<Action> actions) {
 		if (getCurrentStatus() != RaceState.Status.RACING) {
 			System.out.println("ERROR: Cannot step as race is over.");

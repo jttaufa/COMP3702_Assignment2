@@ -24,7 +24,7 @@ public class MCTS {
 	}
 
 	public void fillConfigs() {
-		for (Track track : tour.getAvailableTracks()) {
+		for (Track track : tour.getUnracedTracks()) {
 			for (Cycle cycle : tour.getPurchasableCycles()) {
 				configMap.put(new Config(track, cycle),
 						-track.getRegistrationFee() - cycle.getPrice());

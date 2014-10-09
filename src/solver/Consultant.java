@@ -53,8 +53,8 @@ public class Consultant {
 
 				// Example:
 				mcts = new MCTS(tour);
-				System.out.println(tour.getAvailableTracks());
-				Track track = tour.getAvailableTracks().get(0);
+				System.out.println(tour.getUnracedTracks());
+				Track track = tour.getUnracedTracks().get(0);
 				ArrayList<Player> players = new ArrayList<Player>();
 				Map<String, GridCell> startingPositions = track
 						.getStartingPositions();
