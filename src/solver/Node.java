@@ -8,16 +8,12 @@ package solver;
  */
 
 public class Node {
-	public double x;
-	public double y;
-	public double r;
-	public double GScore;
-	public double FScore; // The straight line distance from the current Node
-							// to the final Node.
-	public double startToNode;
-	public double endToNode;
-	public boolean startNode;
-	public boolean endNode;
+	private double meanProfit; //Average profit won from this node
+	private Node parent; //Parent node
+	private String type; //Type of node (Track, Speed, Reliability, Wildness)
+	private Object nodeObj; //Object to which node is referring (could be a Track, Bike, or Tour)
+	private int nIter;   //Number of times node has been called
+	private String name;
 
 	/**
 	 * Creates a Node with x and y values
@@ -27,100 +23,72 @@ public class Node {
 	 * @param y
 	 *            the y value of the Node
 	 */
-	public Node(double x, double y) {
-		this.x = x;
-		this.y = y;
-		this.GScore = 0;
-		this.FScore = 0;
-
+	public Node(String nodeType, String nodeName, Object nodeObj, Node parent) {
+		this.type = nodeType;
+		this.meanProfit = 0;
+		this.nIter = 0;
+		this.name = nodeName;
+		this.parent = parent;
 	}
 
+	public Node(Node node){
+		this.type = node.getType();
+		this.meanProfit = node.getMeanProfit();
+		this.nIter = node.getNumRuns();
+		this.name = node.getNodeName();
+		this.parent = node.getParent();
+	}
+	
+	public String getNodeName(){
+		return this.name;
+	}
+	
 	/**
-	 * Creates a Node with x and y values from a point
-	 * 
-	 * @param point
-	 *            in the form of a Point2D.Double point
+	 * Returns the average profit for this selected node
 	 */
-	public Node(Point2D.Double point) {
-		this.x = point.getX();
-		this.y = point.getY();
-		this.GScore = 0;
-		this.FScore = 0;
+	public double getMeanProfit(){
+		return this.meanProfit;
+	}
+	
+	public int getNumRuns(){
+		return this.nIter;
 	}
 
-	/**
-	 * Returns the x-value.
-	 */
-	@Override
-	public double getX() {
-		return this.x;
+	public Node getParent(){
+		return this.parent;
 	}
-
-	/**
-	 * Returns the y-value.
-	 */
-	@Override
-	public double getY() {
-		return this.y;
+	
+	public Object getObject(){
+		return this.nodeObj;
 	}
-
-	/**
-	 * Sets the x and y values of the Node.
-	 */
-	@Override
-	public void setLocation(double x, double y) {
-		this.x = x;
-		this.y = y;
+	
+	public String getType(){
+		return this.type;
 	}
-
-	/**
-	 * Gets the current GScore of the Node.
-	 * 
-	 * @return the GScore
-	 */
-	public double getGScore() {
-		return this.GScore;
+	
+	public boolean hasChildren(){
+		return (this.type != "Bike_Speed");
 	}
-
+	
+	
 	/**
-	 * Gets the current FScore of the Node.
-	 * 
-	 * @return the FScore
+	 * Updates the average profits of this node for a new profit value
 	 */
-	public double getFScore() {
-		return this.FScore;
+	public void updateMeanProfit(double newProfit){
+		meanProfit = ((nIter * meanProfit) + newProfit) / (nIter + 1); //Recalculate new mean
+		nIter++; //Increment the number of iterations
 	}
+	
+	
 
 	/**
 	 * Provides the String representation of the Node.
 	 */
 	@Override
 	public String toString() {
-		return "x = " + this.x + " & y = " + this.y;
-	}
-
-	/**
-	 * Converts the Node to a Point2D.Double
-	 * 
-	 * @return a Point2D.Double(x, y)
-	 */
-	public Point2D.Double toPoint2D() {
-		return new Point2D.Double(this.x, this.y);
-	}
-
-	/**
-	 * Calculates the straight line distance from the current Node to a
-	 * different Node.
-	 * 
-	 * @param n
-	 *            a different Node to calculate the distance to.
-	 * @return the distance r
-	 */
-	public double getDistanceTo(Node n) {
-		double dx = (this.getX() - n.getX());
-		double dy = (this.getY() - n.getY());
-		this.r = Math.sqrt(dx * dx + dy * dy);
-		return this.r;
+		String str = type + "\t Object: " + nodeObj + "\tParent "+parent;
+		str += "\t Ave Profit for "+nIter+" runs: $" + meanProfit;
+		return str;
 	}
 
 	/**
@@ -134,13 +102,25 @@ public class Node {
 		// values, GScore and FScore are equivalent.
 		if (o instanceof Node) {
 			Node testNode = (Node) o;
-			if (this.x != testNode.getX() || this.y != testNode.getY()
-					|| this.GScore != testNode.getGScore()
-					|| this.FScore != testNode.getFScore()) {
+			if (this.nodeObj != testNode.getObject() 
+					|| this.parent != testNode.getParent()
+					|| this.type != testNode.getType()) {
 				return false;
 			}
 			return true;
 		}
 		return false;
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 7;
+		int result;
+		
+		result = prime * ((type == null) ? 0 : type.hashCode());
+		result = result + prime * ((parent == null) ? 0 : parent.hashCode());
+		
+		return result;
+	}
+
 }

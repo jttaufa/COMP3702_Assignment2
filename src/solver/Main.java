@@ -29,9 +29,11 @@ public class Main {
 		Setup setup = new Setup(cycleFile, metaTrackFile);
 
 		// Create and solve tour
-		Consultant consultant = new Consultant();
+		//Consultant consultant = new Consultant();
 		Tour tour = new Tour(setup);
-		consultant.solveTour(tour);
+		//consultant.solveTour(tour);
+		MonteCarlo mc = new MonteCarlo(setup,tour,1);
+		//mc.runSimulation();
 		try {
 			tour.outputToFile(outputFile);
 		} catch (IOException e) {

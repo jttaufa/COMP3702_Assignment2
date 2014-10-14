@@ -81,7 +81,7 @@ public class Tour {
 		System.out.printf("\nTour created. Starting money: $%.2f\n", money);
 		random = new Random();
 	}
-
+	
 	/**
 	 * Finish the preparation phase and complete the Tour without entering any
 	 * races at all
