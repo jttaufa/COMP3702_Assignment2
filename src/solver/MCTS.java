@@ -25,7 +25,6 @@ public class MCTS {
 
 	public void fillConfigs() {
 		for (Track track : tour.getUnracedTracks()) {
-			// System.out.println(tour.getUnracedTracks());
 			for (Cycle cycle : tour.getPurchasableCycles()) {
 				configMap.put(new Config(track, cycle),
 						-track.getRegistrationFee() - cycle.getPrice());
@@ -38,22 +37,22 @@ public class MCTS {
 		Cycle cycle = config.c;
 		switch (cycle.getSpeed()) {
 		case SLOW:
-			actionMap.put(Action.FS, 0.5);
-			actionMap.put(Action.NE, 0.25);
-			actionMap.put(Action.SE, 0.25);
+			actionMap.put(Action.FS, 0.6);
+			actionMap.put(Action.NE, 0.2);
+			actionMap.put(Action.SE, 0.2);
 			break;
 		case MEDIUM:
-			actionMap.put(Action.FM, 0.25);
-			actionMap.put(Action.FS, 0.25);
-			actionMap.put(Action.NE, 0.25);
-			actionMap.put(Action.SE, 0.25);
-			break;
-		case FAST:
-			actionMap.put(Action.FF, 0.2);
-			actionMap.put(Action.FM, 0.2);
+			actionMap.put(Action.FM, 0.4);
 			actionMap.put(Action.FS, 0.2);
 			actionMap.put(Action.NE, 0.2);
 			actionMap.put(Action.SE, 0.2);
+			break;
+		case FAST:
+			actionMap.put(Action.FF, 0.35);
+			actionMap.put(Action.FM, 0.2);
+			actionMap.put(Action.FS, 0.15);
+			actionMap.put(Action.NE, 0.15);
+			actionMap.put(Action.SE, 0.15);
 			break;
 		}
 		return actionMap;

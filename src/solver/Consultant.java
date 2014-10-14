@@ -46,8 +46,8 @@ public class Consultant {
 		}
 
 		// Register tracks
+		// Must be max of 3 tracks
 		List<Track> tracks = tour.getTracks();
-		System.out.println(tracks);
 		for (Track t : tracks) {
 			int numPlayers = t.getStartingPositions().size();
 			tour.registerTrack(t, numPlayers);
@@ -64,7 +64,6 @@ public class Consultant {
 
 				// Example:
 				mcts = new MCTS(tour);
-				System.out.println(tour.getUnracedTracks());
 				Track track = tour.getUnracedTracks().get(0);
 				ArrayList<Player> players = new ArrayList<Player>();
 				Map<String, GridCell> startingPositions = track
