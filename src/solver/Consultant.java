@@ -15,9 +15,10 @@ import problem.Tour;
 import problem.Track;
 
 /**
- * Implement your solver here.
+ * Implement the code to chose the best bike for 3 races with the intention of
+ * winning the most prize money.
  * 
- * @author Joshua Song
+ * @author Route66
  * 
  */
 public class Consultant {
@@ -32,7 +33,8 @@ public class Consultant {
 		// You should get information from the tour using the getters, and
 		// make your plan.
 
-		// Example: Buy the first cycle that is Wild
+		// Example:
+		// Buy the first cycle that is Wild
 		List<Cycle> purchasableCycles = tour.getPurchasableCycles();
 		Cycle cycle = null;
 		for (int i = 0; i < purchasableCycles.size(); i++) {
@@ -42,6 +44,15 @@ public class Consultant {
 				break;
 			}
 		}
+
+		// Register tracks
+		List<Track> tracks = tour.getTracks();
+		System.out.println(tracks);
+		for (Track t : tracks) {
+			int numPlayers = t.getStartingPositions().size();
+			tour.registerTrack(t, numPlayers);
+		}
+
 		MCTS mcts = new MCTS(tour);
 
 		while (!tour.isFinished()) {
@@ -84,6 +95,7 @@ public class Consultant {
 			// ArrayList<Action> actions = new ArrayList<Action>();
 			// actions.add(Action.FS);
 			// tour.stepTurn(actions);
+
 			Config config = new Config(tour.getCurrentTrack(), cycle);
 			RaceSim currentSim = tour.getCurrentSim();
 			System.out.println("Player position: "

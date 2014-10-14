@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 /**
  * Use this class to load the cycle and track information from file
+ * 
  * @author Joshua Song
  *
  */
@@ -23,7 +24,7 @@ public class Setup {
 	private String metaTrackFile;
 	private String cycleFileNoPath;
 	private String metaTrackFileNoPath;
-	
+
 	public Setup(List<Cycle> cycles, List<Track> tracks, double startupMoney) {
 		this.cycles = cycles;
 		this.tracks = tracks;
@@ -33,14 +34,14 @@ public class Setup {
 		cycleFileNoPath = "None";
 		metaTrackFileNoPath = "None";
 	}
-	
+
 	public Setup(String cycleFile, String metaTrackFile) {
 		this.cycleFile = cycleFile;
 		this.metaTrackFile = metaTrackFile;
 		try {
 			cycles = loadCycles(cycleFile);
 			tracks = loadTracks(metaTrackFile);
-			
+
 			// Get file names excluding the path to get there
 			File f = new File(cycleFile);
 			cycleFileNoPath = f.getName();
@@ -50,37 +51,37 @@ public class Setup {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public List<Cycle> getCycles() {
 		return cycles;
 	}
-	
+
 	public List<Track> getTracks() {
 		return tracks;
 	}
-	
+
 	public double getStartupMoney() {
 		return startupMoney;
 	}
-	
+
 	public String getCycleFileNoPath() {
 		return cycleFileNoPath;
 	}
-	
+
 	public String getMetaTrackFileNoPath() {
 		return metaTrackFileNoPath;
 	}
-	
+
 	public String getCycleFile() {
 		return cycleFile;
 	}
-	
+
 	public String getMetaTrackFile() {
 		return metaTrackFile;
 	}
-	
+
 	private List<Cycle> loadCycles(String filename) throws IOException {
-		System.out.println("Loading " + filename);
+		System.out.print("Loading " + filename + "...  ");
 		List<Cycle> result = new ArrayList<Cycle>();
 		BufferedReader input = new BufferedReader(new FileReader(filename));
 		String line;
@@ -132,9 +133,9 @@ public class Setup {
 		System.out.println("Done");
 		return result;
 	}
-	
+
 	private List<Track> loadTracks(String filename) throws IOException {
-		System.out.println("Loading " + filename);
+		System.out.println("Loading " + filename + "... ... ...");
 		List<Track> result = new ArrayList<Track>();
 		File meta = new File(filename);
 		BufferedReader input = new BufferedReader(new FileReader(meta));
@@ -152,8 +153,8 @@ public class Setup {
 			for (int i = 0; i < numTracks; i++) {
 				line = input.readLine();
 				lineNo++;
-				String path = meta.getParent() +
-						System.getProperty("file.separator") + line;
+				String path = meta.getParent()
+						+ System.getProperty("file.separator") + line;
 				result.add(new Track(path));
 			}
 		} catch (InputMismatchException e) {
@@ -169,7 +170,7 @@ public class Setup {
 		} finally {
 			input.close();
 		}
-		System.out.println("Done");
+		System.out.println("Meta-track loading complete!");
 		return result;
 	}
 }

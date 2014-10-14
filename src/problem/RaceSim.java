@@ -9,7 +9,7 @@ import java.util.Random;
  * Simulator for a race
  * 
  * @author Joshua Song
- * 
+ *
  */
 public class RaceSim {
 
@@ -19,8 +19,8 @@ public class RaceSim {
 	private Track track;
 	private double totalDamageCost;
 
-	public RaceSim(RaceState startState, Track track) {
-		random = new Random();
+	public RaceSim(RaceState startState, Track track, Random random) {
+		this.random = random;
 		stateHistory = new ArrayList<RaceState>();
 		stateHistory.add(startState);
 		actionHistory = new ArrayList<ArrayList<Action>>();
@@ -28,23 +28,9 @@ public class RaceSim {
 		totalDamageCost = 0;
 	}
 
-	/**
-	 * Samples a new RaceState and adds it to the stateHistory
-	 * 
-	 * @param actions
-	 */
-
-	public RaceSim(RaceSim r1) {
-		this.stateHistory = new ArrayList<RaceState>(r1.getStateHistory());
-		this.actionHistory = new ArrayList<ArrayList<Action>>(
-				r1.getActionHistory());
-		this.track = r1.getTrack();
-		this.totalDamageCost = r1.getTotalDamageCost();
-		this.random = new Random();
-	}
-
 	public RaceSim(List<RaceState> stateHistory,
-			List<ArrayList<Action>> actionHistory, Track track) {
+			List<ArrayList<Action>> actionHistory, Track track, Random random) {
+		this.random = random;
 		this.stateHistory = stateHistory;
 		this.actionHistory = actionHistory;
 		this.track = track;
@@ -55,6 +41,11 @@ public class RaceSim {
 		}
 	}
 
+	/**
+	 * Samples a new RaceState and adds it to the stateHistory
+	 * 
+	 * @param actions
+	 */
 	public void stepTurn(List<Action> actions) {
 		if (getCurrentStatus() != RaceState.Status.RACING) {
 			System.out.println("ERROR: Cannot step as race is over.");
@@ -134,5 +125,18 @@ public class RaceSim {
 	 */
 	public double getTotalDamageCost() {
 		return totalDamageCost;
+	}
+
+	/**
+	 * Route66 constructor required for MCTS
+	 */
+	public RaceSim(RaceSim simulation) {
+		this.random = new Random();
+		this.stateHistory = new ArrayList<RaceState>(
+				simulation.getStateHistory());
+		this.actionHistory = new ArrayList<ArrayList<Action>>(
+				simulation.getActionHistory());
+		this.track = simulation.getTrack();
+		this.totalDamageCost = simulation.getTotalDamageCost();
 	}
 }

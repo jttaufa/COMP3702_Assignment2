@@ -4,17 +4,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class RaceState {
-
-	public enum Status {
-		RACING, WON, LOST
-	}
-
+	
+	public enum Status { RACING, WON, LOST }
+	
 	private List<Player> players;
 	private List<Opponent> opponents;
 	private List<Distractor> distractors;
 	private Status status;
 	private int turnNo;
-
+	
 	public RaceState(List<Player> players, List<Opponent> opponents,
 			List<Distractor> distractors) {
 		this.players = players;
@@ -23,7 +21,7 @@ public class RaceState {
 		this.status = Status.RACING;
 		this.turnNo = 0;
 	}
-
+	
 	public RaceState(List<Player> players, List<Opponent> opponents,
 			List<Distractor> distractors, Status status, int turnNo) {
 		this.players = players;
@@ -36,21 +34,29 @@ public class RaceState {
 	public List<Player> getPlayers() {
 		return Collections.unmodifiableList(players);
 	}
-
+	
 	public List<Opponent> getOpponents() {
 		return Collections.unmodifiableList(opponents);
 	}
-
+	
 	public List<Distractor> getDistractors() {
 		return Collections.unmodifiableList(distractors);
 	}
-
+	
 	public Status getStatus() {
 		return status;
 	}
-
+	
 	public int getTurnNo() {
 		return turnNo;
+	}
+	
+	public double getTotalDamageCost() {
+		double sum = 0;
+		for (Player p : players) {
+			sum += p.getDamageCost();
+		}
+		return sum;
 	}
 
 	@Override
@@ -64,14 +70,6 @@ public class RaceState {
 		result = prime * result + ((players == null) ? 0 : players.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		return result;
-	}
-
-	public double getTotalDamageCost() {
-		double sum = 0;
-		for (Player p : players) {
-			sum += p.getDamageCost();
-		}
-		return sum;
 	}
 
 	@Override

@@ -10,26 +10,27 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-
 /**
  * Represents a race track
+ * 
  * @author Joshua Song
  *
  */
 public class Track {
-	
+
 	/**
-	 * Enumeration of the possible grid cell types. Distractor means the cell
-	 * is a location for the possible occurance of a distractor.
+	 * Enumeration of the possible grid cell types. Distractor means the cell is
+	 * a location for the possible occurance of a distractor.
 	 */
 	public enum CellType {
 		EMPTY, OBSTACLE, GOAL
 	}
-	
+
 	private String fileName;
 	private String fileNameNoPath;
 	private int numRows;
@@ -37,7 +38,7 @@ public class Track {
 	private int numOpponents;
 	private double registrationFee;
 	private double prize;
-	
+
 	/** The map, which is a matrix of CellTypes */
 	private ArrayList<ArrayList<CellType>> map;
 	/** Starting locations for the players. Maps string id to GridCell */
@@ -46,7 +47,7 @@ public class Track {
 	private List<Opponent> opponents;
 	/** Distractors, set to their starting positions */
 	private List<Distractor> distractors;
-	
+
 	public Track(ArrayList<ArrayList<CellType>> map,
 			Map<String, GridCell> playerStarts, List<Opponent> opponents,
 			List<Distractor> distractors) {
@@ -58,14 +59,16 @@ public class Track {
 
 	/**
 	 * Load the track from a text file
-	 * @param fileName The path of the text file to load.
-	 * @throws IOException 
+	 * 
+	 * @param fileName
+	 *            The path of the text file to load.
+	 * @throws IOException
 	 */
 	public Track(String fileName) throws IOException {
 		this.fileName = fileName;
 		File file = new File(fileName);
 		fileNameNoPath = file.getName();
-		System.out.println("Loading " + fileName);
+		System.out.print("Loading " + fileName + "...  ");
 		BufferedReader input = new BufferedReader(new FileReader(fileName));
 		String line = "";
 		int lineNo = 0;
@@ -74,6 +77,7 @@ public class Track {
 			line = input.readLine();
 			lineNo++;
 			s = new Scanner(line);
+			s.useLocale(Locale.ENGLISH);
 			numRows = s.nextInt();
 			numCols = s.nextInt();
 			numOpponents = s.nextInt();
@@ -85,7 +89,7 @@ public class Track {
 			map = new ArrayList<ArrayList<CellType>>();
 			playerStarts = new HashMap<String, GridCell>();
 			Map<String, GridCell> opponentStarts = new HashMap<String, GridCell>();
-			Map<String, GridCell> distractorStarts = new HashMap<String, GridCell>();
+			Map<String, ArrayList<GridCell>> distractorStarts = new HashMap<String, ArrayList<GridCell>>();
 			for (int row = 0; row < numRows; row++) {
 				line = input.readLine();
 				lineNo++;
@@ -100,18 +104,22 @@ public class Track {
 					} else {
 						mapRow.add(CellType.EMPTY);
 					}
-					
+
 					if (c >= 'K' && c <= 'Z') {
 						playerStarts.put(Character.toString(c), cell);
 					} else if (c >= 'A' && c <= 'J') {
 						opponentStarts.put(Character.toString(c), cell);
 					} else if (Character.isLowerCase(c)) {
-						distractorStarts.put(Character.toString(c), cell);
+						String cs = Character.toString(c);
+						if (!distractorStarts.containsKey(cs)) {
+							distractorStarts.put(cs, new ArrayList<GridCell>());
+						}
+						distractorStarts.get(cs).add(cell);
 					}
 				}
 				map.add(mapRow);
 			}
-			
+
 			// Load opponent policies and create opponents
 			opponents = new ArrayList<Opponent>();
 			for (int i = 0; i < numOpponents; i++) {
@@ -124,8 +132,9 @@ public class Track {
 						lineNo++;
 						GridCell cell = new GridCell(row, col);
 						s = new Scanner(line);
-						EnumMap<Action, Double> actionMap = 
-								new EnumMap<Action, Double>(Action.class);
+						s.useLocale(Locale.ENGLISH);
+						EnumMap<Action, Double> actionMap = new EnumMap<Action, Double>(
+								Action.class);
 						actionMap.put(Action.FS, s.nextDouble());
 						actionMap.put(Action.FM, s.nextDouble());
 						actionMap.put(Action.FF, s.nextDouble());
@@ -135,10 +144,10 @@ public class Track {
 						policy.put(cell, actionMap);
 					}
 				}
-				opponents.add(new Opponent(opponentId, policy,
-						opponentStarts.get(opponentId)));
+				opponents.add(new Opponent(opponentId, policy, opponentStarts
+						.get(opponentId)));
 			}
-			
+
 			// Load distractor behaviour and create distractors
 			distractors = new ArrayList<Distractor>();
 			for (int i = 0; i < distractorStarts.size(); i++) {
@@ -147,11 +156,13 @@ public class Track {
 				line = input.readLine();
 				lineNo++;
 				s = new Scanner(line);
+				s.useLocale(Locale.ENGLISH);
 				double appearProb = s.nextDouble();
 				s.close();
-				distractors.add(new Distractor(id, appearProb, false,
-						distractorStarts.get(id)));				
-			}			
+				for (GridCell g : distractorStarts.get(id)) {
+					distractors.add(new Distractor(id, appearProb, false, g));
+				}
+			}
 		} catch (InputMismatchException e) {
 			throw new IOException(String.format(
 					"Invalid number format on line %d: %s", lineNo,
@@ -167,50 +178,53 @@ public class Track {
 		}
 		System.out.println("Done");
 	}
-	
+
 	/**
 	 * Returns true if position is within the map
-	 * @param pos GridCell position
+	 * 
+	 * @param pos
+	 *            GridCell position
 	 * @return true iff pos is within map bounds
 	 */
 	public boolean withinBorder(GridCell pos) {
-		if (pos.getRow() < 0 || pos.getRow() > numRows - 1 ||
-				pos.getCol() < 0 || pos.getCol() > numCols - 1) {
+		if (pos.getRow() < 0 || pos.getRow() > numRows - 1 || pos.getCol() < 0
+				|| pos.getCol() > numCols - 1) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	public CellType getCellType(GridCell pos) {
 		return map.get(pos.getRow()).get(pos.getCol());
 	}
-	
+
 	public int getNumRows() {
 		return numRows;
 	}
-	
+
 	public int getNumCols() {
 		return numCols;
 	}
-	
+
 	public double getRegistrationFee() {
 		return registrationFee;
 	}
-	
+
 	public double getPrize() {
 		return prize;
 	}
-	
+
 	public int getNumOpponents() {
 		return numOpponents;
 	}
-	
+
 	public String getFileName() {
 		return fileName;
 	}
-	
+
 	/**
 	 * Returns the name of this track, i.e. the last bit of the file path
+	 * 
 	 * @return name of track
 	 */
 	public String getFileNameNoPath() {
@@ -218,40 +232,53 @@ public class Track {
 	}
 
 	/**
+	 * Returns the name of this track, (no path / extension)
+	 * 
+	 * @return name of track
+	 */
+	public String getName() {
+		return getFileNameNoPath().split("\\.(?=[^\\.]+$)")[0];
+	}
+
+	/**
 	 * Return the list of opponents. Each opponent is set to its starting
 	 * position.
+	 * 
 	 * @return list of opponnents
 	 */
 	public List<Opponent> getOpponents() {
 		return Collections.unmodifiableList(opponents);
 	}
-	
+
 	/**
 	 * Returns the list of distractors. Each distractor is set to its starting
 	 * position, and starts with hasAppeared set to false.
+	 * 
 	 * @return list of distractors
 	 */
 	public List<Distractor> getDistractors() {
 		return Collections.unmodifiableList(distractors);
 	}
-	
+
 	/**
-	 * Returns read-only Map of starting locations for the players. 
-	 * Maps string id to GridCell
+	 * Returns read-only Map of starting locations for the players. Maps string
+	 * id to GridCell
+	 * 
 	 * @return
 	 */
 	public Map<String, GridCell> getStartingPositions() {
 		return Collections.unmodifiableMap(playerStarts);
 	}
-	
+
 	/**
 	 * Returns a read-only map
+	 * 
 	 * @return The track's map
 	 */
 	public List<ArrayList<CellType>> getMap() {
 		return Collections.unmodifiableList(map);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -331,6 +358,5 @@ public class Track {
 			return false;
 		return true;
 	}
-	
-	
+
 }
