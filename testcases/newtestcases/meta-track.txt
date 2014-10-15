@@ -1,0 +1,4 @@
+3 600
+diamond.txt
+gauntlet.txt
+random1.txt

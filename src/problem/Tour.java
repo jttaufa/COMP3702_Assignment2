@@ -37,7 +37,7 @@ public class Tour {
 	private int maxRaces;
 
 	/** The current amount of money */
-	private double money;
+	public double money;
 	/** List of cycles purchased */
 	private ArrayList<Cycle> purchasedCycles;
 	/** Tracks registered, and number of players registered for it */
@@ -186,9 +186,11 @@ public class Tour {
 
 		registeredTracks.put(track, numPlayers);
 		money -= cost;
+		
 		System.out
 				.printf("Successfully registered for %d player(s) in track %s.  $%.2f remaining.\n",
 						numPlayers, track.getFileNameNoPath(), money);
+		
 		return true;
 	}
 

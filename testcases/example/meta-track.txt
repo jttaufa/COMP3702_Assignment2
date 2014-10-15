@@ -1,4 +1,6 @@
-3 600
+5 200
 union.txt
 stLucia.txt
 gatton.txt
+bne.txt
+st.txt

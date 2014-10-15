@@ -28,33 +28,16 @@ public class Consultant {
 	 * 
 	 * @param tour
 	 */
-	public void solveTour(Tour tour) {
+	public void solveTour(Tour tour, List<Node> goodList) {
 
 		// You should get information from the tour using the getters, and
 		// make your plan.
 
 		// Example:
 		// Buy the first cycle that is Wild
-		List<Cycle> purchasableCycles = tour.getPurchasableCycles();
-		Cycle cycle = null;
-		for (int i = 0; i < purchasableCycles.size(); i++) {
-			cycle = purchasableCycles.get(i);
-			if (cycle.isWild()) {
-				tour.buyCycle(cycle);
-				break;
-			}
-		}
-
-		// Register tracks
-		// Must be max of 3 tracks
-		List<Track> tracks = tour.getTracks();
-		for (Track t : tracks) {
-			int numPlayers = t.getStartingPositions().size();
-			tour.registerTrack(t, numPlayers);
-		}
-
+		
 		MCTS mcts = new MCTS(tour);
-
+		Cycle cycle = (Cycle) goodList.get(0).getObject();
 		while (!tour.isFinished()) {
 
 			if (tour.isPreparing()) {
@@ -64,7 +47,8 @@ public class Consultant {
 
 				// Example:
 				mcts = new MCTS(tour);
-				Track track = tour.getUnracedTracks().get(0);
+				Track track = (Track) goodList.get(0).getParent().getObject();
+				cycle = (Cycle) goodList.remove(0).getObject();
 				ArrayList<Player> players = new ArrayList<Player>();
 				Map<String, GridCell> startingPositions = track
 						.getStartingPositions();

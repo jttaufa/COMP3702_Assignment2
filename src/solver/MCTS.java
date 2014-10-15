@@ -32,27 +32,70 @@ public class MCTS {
 		}
 	}
 
-	public Map<Action, Double> generateAction(Config config) {
+	public Map<Action, Double> generateAction(Config config, int i) {
 		Map<Action, Double> actionMap = new HashMap<Action, Double>();
 		Cycle cycle = config.c;
 		switch (cycle.getSpeed()) {
 		case SLOW:
-			actionMap.put(Action.FS, 0.6);
-			actionMap.put(Action.NE, 0.2);
-			actionMap.put(Action.SE, 0.2);
+			if(i == 1) {
+				actionMap.put(Action.FS, 0.7);
+				//actionMap.put(Action.NE, 0.2);
+				actionMap.put(Action.SE, 0.3);
+			}
+			if(i == 0) {
+				actionMap.put(Action.FS, 0.6);
+				actionMap.put(Action.NE, 0.2);
+				actionMap.put(Action.SE, 0.2);
+			}
+			if(i == -1) {
+				actionMap.put(Action.FS, 0.7);
+				actionMap.put(Action.NE, 0.3);
+				//actionMap.put(Action.SE, 0.3);
+			}
 			break;
 		case MEDIUM:
-			actionMap.put(Action.FM, 0.4);
-			actionMap.put(Action.FS, 0.2);
-			actionMap.put(Action.NE, 0.2);
-			actionMap.put(Action.SE, 0.2);
+			if(i == 0) {
+				actionMap.put(Action.FM, 0.4);
+				actionMap.put(Action.FS, 0.2);
+				actionMap.put(Action.NE, 0.2);
+				actionMap.put(Action.SE, 0.2);
+			}
+			if(i == 1) {
+				actionMap.put(Action.FM, 0.5);
+				actionMap.put(Action.FS, 0.25);
+				//actionMap.put(Action.NE, 0.2);
+				actionMap.put(Action.SE, 0.25);
+			}
+			if(i == -1) {
+				actionMap.put(Action.FM, 0.5);
+				actionMap.put(Action.FS, 0.25);
+				actionMap.put(Action.NE, 0.25);
+				//actionMap.put(Action.SE, 0.2);
+			}
 			break;
 		case FAST:
-			actionMap.put(Action.FF, 0.35);
-			actionMap.put(Action.FM, 0.2);
-			actionMap.put(Action.FS, 0.15);
-			actionMap.put(Action.NE, 0.15);
-			actionMap.put(Action.SE, 0.15);
+			if(i == 0) {
+				actionMap.put(Action.FF, 0.35);
+				actionMap.put(Action.FM, 0.2);
+				actionMap.put(Action.FS, 0.15);
+				actionMap.put(Action.NE, 0.15);
+				actionMap.put(Action.SE, 0.15);
+			}
+			if(i == 1) {
+				actionMap.put(Action.FF, 0.5);
+				actionMap.put(Action.FM, 0.2);
+				actionMap.put(Action.FS, 0.15);
+				//actionMap.put(Action.NE, 0.15);
+				actionMap.put(Action.SE, 0.15);
+			}
+			if(i == -1) {
+				actionMap.put(Action.FF, 0.5);
+				actionMap.put(Action.FM, 0.2);
+				actionMap.put(Action.FS, 0.15);
+				actionMap.put(Action.NE, 0.15);
+				//actionMap.put(Action.SE, 0.15);
+			}
+			
 			break;
 		}
 		return actionMap;
@@ -70,7 +113,14 @@ public class MCTS {
 		Random random = new Random();
 		while (!currentSim.isFinished()) {
 			ArrayList<Action> actions = new ArrayList<Action>();
-			actions.add(RaceSimTools.chooseRandom(generateAction(config),
+			int y = currentSim.getCurrentState().getPlayers().get(0).getPosition().getRow();
+			int yparam = 0;
+			if(y == 0) {
+				yparam = 1;
+			} else if (y == currentSim.getTrack().getNumRows() - 1) {
+				yparam = -1;
+			}
+			actions.add(RaceSimTools.chooseRandom(generateAction(config,yparam),
 					random));
 			currentSim.stepTurn(actions);
 		}
@@ -86,7 +136,14 @@ public class MCTS {
 		Action bestAction = Action.ST;
 		double bestScore = -9999;
 		int n = 50;
-		for (Action a : generateAction(config).keySet()) {
+		int y = currentSim.getCurrentState().getPlayers().get(0).getPosition().getRow();
+		int yparam = 0;
+		if(y == 0) {
+			yparam = 1;
+		} else if (y == currentSim.getTrack().getNumRows() - 1) {
+			yparam = -1;
+		}
+		for (Action a : generateAction(config,yparam).keySet()) {
 			double score = 0;
 			for (int i = 0; i < n; i++) {
 				ArrayList<Action> actions = new ArrayList<Action>();

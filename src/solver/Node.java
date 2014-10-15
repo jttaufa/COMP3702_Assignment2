@@ -1,5 +1,8 @@
 package solver;
 
+import problem.Cycle;
+import problem.Track;
+
 /**
  * Creates a Node object that
  * 
@@ -25,10 +28,17 @@ public class Node {
 	 */
 	public Node(String nodeType, String nodeName, Object nodeObj, Node parent) {
 		this.type = nodeType;
-		this.meanProfit = 0;
-		this.nIter = 0;
 		this.name = nodeName;
+		this.nodeObj = nodeObj;
 		this.parent = parent;
+		this.meanProfit = 0;
+		/*if (nodeObj instanceof Cycle){
+			this.meanProfit = - ((Cycle) nodeObj).getPrice();
+		} else if (nodeObj instanceof Track){
+			this.meanProfit = - ((Track) nodeObj).getPrize() +  ((Track) nodeObj).getRegistrationFee();
+		}
+		*/
+		this.nIter = 1;
 	}
 
 	public Node(Node node){
@@ -66,8 +76,12 @@ public class Node {
 		return this.type;
 	}
 	
+	public String getName(){
+		return this.name;
+	}
+	
 	public boolean hasChildren(){
-		return (this.type != "Bike_Speed");
+		return (this.type != "Cycle");
 	}
 	
 	
@@ -86,8 +100,15 @@ public class Node {
 	 */
 	@Override
 	public String toString() {
-		String str = type + "\t Object: " + nodeObj + "\tParent "+parent;
-		str += "\t Ave Profit for "+nIter+" runs: $" + meanProfit;
+		String str;
+		if (this.type == "Tour"){
+			str = type + "\t Object: " + nodeObj + "\tParent: None";
+			str += "\t Ave Profit for "+nIter+" runs: $" + meanProfit;
+ 
+		} else {
+			str = type + "\t Object: " + nodeObj + "\tParent: "+ parent.getName();
+			str += "\t Ave Profit for "+nIter+" runs: $" + meanProfit;
+		}
 		return str;
 	}
 

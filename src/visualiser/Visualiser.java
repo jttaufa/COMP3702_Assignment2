@@ -60,6 +60,7 @@ import problem.Setup;
 import problem.Tour;
 import problem.Track;
 import solver.Consultant;
+import solver.MonteCarlo;
 
 public class Visualiser {
 	private Container container;
@@ -689,8 +690,10 @@ public class Visualiser {
 			return;
 		}
 		tour = new Tour(setup);
-		Consultant consultant = new Consultant();
-		consultant.solveTour(tour);
+		//Consultant consultant = new Consultant();
+		//consultant.solveTour(tour);
+		MonteCarlo mc = new MonteCarlo(setup,tour,1);
+		mc.runMonteCarlo(300);
 		setHasTour(true);
 	}
 
@@ -909,16 +912,18 @@ public class Visualiser {
 		Setup setup = new Setup(cycleFile, metaTrackFile);
 
 		// Create and solve tour
-		Consultant consultant = new Consultant();
-		Tour tour = new Tour(setup);
-		consultant.solveTour(tour);
-		try {
+		//Consultant consultant = new Consultant();
+		//Tour tour = new Tour(setup);
+		//consultant.solveTour(tour);
+		//MonteCarlo mc = new MonteCarlo(setup,tour,1);
+		//mc.runMonteCarlo(300);
+		/*try {
 			tour.outputToFile(outputFile);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		vis.setSetup(setup);
-		vis.setTour(tour);
+		}*/
+		//vis.setSetup(setup);
+		//vis.setTour(tour);
 
 		/*
 		 * // Print times for (int i = 0; i < tour.getNumRaces(); i++) { double
