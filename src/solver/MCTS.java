@@ -37,65 +37,65 @@ public class MCTS {
 		Cycle cycle = config.c;
 		switch (cycle.getSpeed()) {
 		case SLOW:
-			if(i == 1) {
+			if (i == 1) {
 				actionMap.put(Action.FS, 0.7);
-				//actionMap.put(Action.NE, 0.2);
+				// actionMap.put(Action.NE, 0.2);
 				actionMap.put(Action.SE, 0.3);
 			}
-			if(i == 0) {
+			if (i == 0) {
 				actionMap.put(Action.FS, 0.6);
 				actionMap.put(Action.NE, 0.2);
 				actionMap.put(Action.SE, 0.2);
 			}
-			if(i == -1) {
+			if (i == -1) {
 				actionMap.put(Action.FS, 0.7);
 				actionMap.put(Action.NE, 0.3);
-				//actionMap.put(Action.SE, 0.3);
+				// actionMap.put(Action.SE, 0.3);
 			}
 			break;
 		case MEDIUM:
-			if(i == 0) {
+			if (i == 0) {
 				actionMap.put(Action.FM, 0.4);
 				actionMap.put(Action.FS, 0.2);
 				actionMap.put(Action.NE, 0.2);
 				actionMap.put(Action.SE, 0.2);
 			}
-			if(i == 1) {
+			if (i == 1) {
 				actionMap.put(Action.FM, 0.5);
 				actionMap.put(Action.FS, 0.25);
-				//actionMap.put(Action.NE, 0.2);
+				// actionMap.put(Action.NE, 0.2);
 				actionMap.put(Action.SE, 0.25);
 			}
-			if(i == -1) {
+			if (i == -1) {
 				actionMap.put(Action.FM, 0.5);
 				actionMap.put(Action.FS, 0.25);
 				actionMap.put(Action.NE, 0.25);
-				//actionMap.put(Action.SE, 0.2);
+				// actionMap.put(Action.SE, 0.2);
 			}
 			break;
 		case FAST:
-			if(i == 0) {
+			if (i == 0) {
 				actionMap.put(Action.FF, 0.35);
 				actionMap.put(Action.FM, 0.2);
 				actionMap.put(Action.FS, 0.15);
 				actionMap.put(Action.NE, 0.15);
 				actionMap.put(Action.SE, 0.15);
 			}
-			if(i == 1) {
+			if (i == 1) {
 				actionMap.put(Action.FF, 0.5);
 				actionMap.put(Action.FM, 0.2);
 				actionMap.put(Action.FS, 0.15);
-				//actionMap.put(Action.NE, 0.15);
+				// actionMap.put(Action.NE, 0.15);
 				actionMap.put(Action.SE, 0.15);
 			}
-			if(i == -1) {
+			if (i == -1) {
 				actionMap.put(Action.FF, 0.5);
 				actionMap.put(Action.FM, 0.2);
 				actionMap.put(Action.FS, 0.15);
 				actionMap.put(Action.NE, 0.15);
-				//actionMap.put(Action.SE, 0.15);
+				// actionMap.put(Action.SE, 0.15);
 			}
-			
+
 			break;
 		}
 		return actionMap;
@@ -113,15 +113,16 @@ public class MCTS {
 		Random random = new Random();
 		while (!currentSim.isFinished()) {
 			ArrayList<Action> actions = new ArrayList<Action>();
-			int y = currentSim.getCurrentState().getPlayers().get(0).getPosition().getRow();
+			int y = currentSim.getCurrentState().getPlayers().get(0)
+					.getPosition().getRow();
 			int yparam = 0;
-			if(y == 0) {
+			if (y == 0) {
 				yparam = 1;
 			} else if (y == currentSim.getTrack().getNumRows() - 1) {
 				yparam = -1;
 			}
-			actions.add(RaceSimTools.chooseRandom(generateAction(config,yparam),
-					random));
+			actions.add(RaceSimTools.chooseRandom(
+					generateAction(config, yparam), random));
 			currentSim.stepTurn(actions);
 		}
 		if (currentSim.getCurrentStatus() == RaceState.Status.WON) {
@@ -132,29 +133,52 @@ public class MCTS {
 		}
 	}
 
-	public Action findNextAction(Config config, RaceSim currentSim) {
+	public Action findNextAction(Config config, RaceSim currentSim,
+			boolean online) {
 		Action bestAction = Action.ST;
 		double bestScore = -9999;
 		int n = 50;
-		int y = currentSim.getCurrentState().getPlayers().get(0).getPosition().getRow();
+		int counter = 0;
+		int y = currentSim.getCurrentState().getPlayers().get(0).getPosition()
+				.getRow();
 		int yparam = 0;
-		if(y == 0) {
+		if (y == 0) {
 			yparam = 1;
 		} else if (y == currentSim.getTrack().getNumRows() - 1) {
 			yparam = -1;
 		}
-		for (Action a : generateAction(config,yparam).keySet()) {
+		for (Action a : generateAction(config, yparam).keySet()) {
+			int n1 = generateAction(config, yparam).keySet().size();
 			double score = 0;
-			for (int i = 0; i < n; i++) {
-				ArrayList<Action> actions = new ArrayList<Action>();
-				actions.add(a);
-				RaceSim currentSimCopy = new RaceSim(currentSim);
-				currentSimCopy.stepTurn(actions);
-				score += rolloutFromCell(config, currentSimCopy);
-			}
-			if ((score / n) > bestScore) {
-				bestScore = score / n;
-				bestAction = a;
+			if (online) {
+				double start = System.currentTimeMillis();
+				counter = 0;
+				while (System.currentTimeMillis() < start + (800 / n1)) {
+					// for (int i = 0; i < n; i++) {
+					ArrayList<Action> actions = new ArrayList<Action>();
+					actions.add(a);
+					RaceSim currentSimCopy = new RaceSim(currentSim);
+					currentSimCopy.stepTurn(actions);
+					score += rolloutFromCell(config, currentSimCopy);
+					counter++;
+				}
+
+				if ((score / counter) > bestScore) {
+					bestScore = score / counter;
+					bestAction = a;
+				}
+			} else {
+				for (int i = 0; i < n; i++) {
+					ArrayList<Action> actions = new ArrayList<Action>();
+					actions.add(a);
+					RaceSim currentSimCopy = new RaceSim(currentSim);
+					currentSimCopy.stepTurn(actions);
+					score += rolloutFromCell(config, currentSimCopy);
+				}
+				if ((score / n) > bestScore) {
+					bestScore = score / n;
+					bestAction = a;
+				}
 			}
 		}
 		return bestAction;

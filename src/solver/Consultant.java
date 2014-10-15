@@ -35,7 +35,7 @@ public class Consultant {
 
 		// Example:
 		// Buy the first cycle that is Wild
-		
+
 		MCTS mcts = new MCTS(tour);
 		Cycle cycle = (Cycle) goodList.get(0).getObject();
 		while (!tour.isFinished()) {
@@ -92,7 +92,7 @@ public class Consultant {
 					.getPlayers().get(0).getPosition(), tour.getCurrentTrack())) {
 				System.out.println("Hit static obstacle");
 			}
-			Action a = mcts.findNextAction(config, currentSim);
+			Action a = mcts.findNextAction(config, currentSim, true);
 			System.out.println("Next action: " + a.toString());
 			ArrayList<Action> actions = new ArrayList<Action>();
 			actions.add(a);

@@ -7,8 +7,8 @@ import problem.Tour;
 
 public class Main {
 
-	static String defaultCycleFile = "testcases/newtestcases/cycle.txt";
-	static String defaultMetaTrackFile = "testcases/newtestcases/meta-track.txt";
+	static String defaultCycleFile = "testcases/tourDuJura/cycle.txt";
+	static String defaultMetaTrackFile = "testcases/tourDuJura/meta-track.txt";
 	static String defaultOutputFile = "result.txt";
 
 	public static void main(String[] args) {
@@ -29,11 +29,11 @@ public class Main {
 		Setup setup = new Setup(cycleFile, metaTrackFile);
 
 		// Create and solve tour
-		//Consultant consultant = new Consultant();
+		// Consultant consultant = new Consultant();
 		Tour tour = new Tour(setup);
-		MonteCarlo mc = new MonteCarlo(setup,tour,1);
-		mc.runMonteCarlo(50);
-		//mc.runSimulation();
+		MonteCarlo mc = new MonteCarlo(setup, tour, 1);
+		mc.runMonteCarlo(30);
+		// mc.runSimulation();
 		try {
 			tour.outputToFile(outputFile);
 		} catch (IOException e) {

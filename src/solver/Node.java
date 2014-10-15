@@ -1,21 +1,19 @@
 package solver;
 
-import problem.Cycle;
-import problem.Track;
-
 /**
  * Creates a Node object that
  * 
  * @author Route66
- *
+ * 
  */
 
 public class Node {
-	private double meanProfit; //Average profit won from this node
-	private Node parent; //Parent node
-	private String type; //Type of node (Track, Speed, Reliability, Wildness)
-	private Object nodeObj; //Object to which node is referring (could be a Track, Bike, or Tour)
-	private int nIter;   //Number of times node has been called
+	private double meanProfit; // Average profit won from this node
+	private Node parent; // Parent node
+	private String type; // Type of node (Track, Speed, Reliability, Wildness)
+	private Object nodeObj; // Object to which node is referring (could be a
+							// Track, Bike, or Tour)
+	private int nIter; // Number of times node has been called
 	private String name;
 
 	/**
@@ -32,68 +30,67 @@ public class Node {
 		this.nodeObj = nodeObj;
 		this.parent = parent;
 		this.meanProfit = 0;
-		/*if (nodeObj instanceof Cycle){
-			this.meanProfit = - ((Cycle) nodeObj).getPrice();
-		} else if (nodeObj instanceof Track){
-			this.meanProfit = - ((Track) nodeObj).getPrize() +  ((Track) nodeObj).getRegistrationFee();
-		}
-		*/
+		/*
+		 * if (nodeObj instanceof Cycle){ this.meanProfit = - ((Cycle)
+		 * nodeObj).getPrice(); } else if (nodeObj instanceof Track){
+		 * this.meanProfit = - ((Track) nodeObj).getPrize() + ((Track)
+		 * nodeObj).getRegistrationFee(); }
+		 */
 		this.nIter = 1;
 	}
 
-	public Node(Node node){
+	public Node(Node node) {
 		this.type = node.getType();
 		this.meanProfit = node.getMeanProfit();
 		this.nIter = node.getNumRuns();
 		this.name = node.getNodeName();
 		this.parent = node.getParent();
 	}
-	
-	public String getNodeName(){
+
+	public String getNodeName() {
 		return this.name;
 	}
-	
+
 	/**
 	 * Returns the average profit for this selected node
 	 */
-	public double getMeanProfit(){
+	public double getMeanProfit() {
 		return this.meanProfit;
 	}
-	
-	public int getNumRuns(){
+
+	public int getNumRuns() {
 		return this.nIter;
 	}
 
-	public Node getParent(){
+	public Node getParent() {
 		return this.parent;
 	}
-	
-	public Object getObject(){
+
+	public Object getObject() {
 		return this.nodeObj;
 	}
-	
-	public String getType(){
+
+	public String getType() {
 		return this.type;
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return this.name;
 	}
-	
-	public boolean hasChildren(){
+
+	public boolean hasChildren() {
 		return (this.type != "Cycle");
 	}
-	
-	
+
 	/**
 	 * Updates the average profits of this node for a new profit value
 	 */
-	public void updateMeanProfit(double newProfit){
-		meanProfit = ((nIter * meanProfit) + newProfit) / (nIter + 1); //Recalculate new mean
-		nIter++; //Increment the number of iterations
+	public void updateMeanProfit(double newProfit) {
+		meanProfit = (((nIter - 1) * meanProfit) + newProfit) / nIter; // Recalculate
+																		// new
+																		// mean
+		nIter++; // Increment the number of iterations
 	}
-	
-	
 
 	/**
 	 * Provides the String representation of the Node.
@@ -101,13 +98,14 @@ public class Node {
 	@Override
 	public String toString() {
 		String str;
-		if (this.type == "Tour"){
+		if (this.type == "Tour") {
 			str = type + "\t Object: " + nodeObj + "\tParent: None";
-			str += "\t Ave Profit for "+nIter+" runs: $" + meanProfit;
- 
+			str += "\t Ave Profit for " + nIter + " runs: $" + meanProfit;
+
 		} else {
-			str = type + "\t Object: " + nodeObj + "\tParent: "+ parent.getName();
-			str += "\t Ave Profit for "+nIter+" runs: $" + meanProfit;
+			str = type + "\t Object: " + nodeObj + "\tParent: "
+					+ parent.getName();
+			str += "\t Ave Profit for " + nIter + " runs: $" + meanProfit;
 		}
 		return str;
 	}
@@ -123,7 +121,7 @@ public class Node {
 		// values, GScore and FScore are equivalent.
 		if (o instanceof Node) {
 			Node testNode = (Node) o;
-			if (this.nodeObj != testNode.getObject() 
+			if (this.nodeObj != testNode.getObject()
 					|| this.parent != testNode.getParent()
 					|| this.type != testNode.getType()) {
 				return false;
@@ -132,15 +130,15 @@ public class Node {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 7;
 		int result;
-		
+
 		result = prime * ((type == null) ? 0 : type.hashCode());
 		result = result + prime * ((parent == null) ? 0 : parent.hashCode());
-		
+
 		return result;
 	}
 
