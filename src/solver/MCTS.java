@@ -137,7 +137,7 @@ public class MCTS {
 			boolean online) {
 		Action bestAction = Action.ST;
 		double bestScore = -9999;
-		int n = 50;
+		int n = 100;
 		int counter = 0;
 		int y = currentSim.getCurrentState().getPlayers().get(0).getPosition()
 				.getRow();

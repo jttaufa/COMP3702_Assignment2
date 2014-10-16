@@ -180,7 +180,7 @@ public class MonteCarlo {
 				}
 			}
 		}
-		System.out.println(goodList);
+		//System.out.println(goodList);
 		Collections.sort(goodList, new Comparator<List<Node>>() {
 			public int compare(List<Node> o1, List<Node> o2) {
 				double profit1 = 0;
@@ -228,7 +228,7 @@ public class MonteCarlo {
 	}
 
 	public void SESB(Node node) { // Select child of node
-		double C = 1000.0; // Exploration vs. exploitation parameter
+		double C = 2350.0; // Exploration vs. exploitation parameter
 		double maxProfit = -999999;
 		double expectedProfit;
 		Node maxChild = null;
